@@ -1,16 +1,27 @@
 import { useState } from "react";
 import styles from "./App.module.css";
 import poweredImage from "./assets/powered.png";
+import leftArrowImage from "./assets/leftarrow.png";
+import { levels, calculateIMC, Level } from "./helpers/imc";
+import { GridItem } from "./components/GridItem";
 
 const App = () => {
   const [heightField, setHeightField] = useState<number>(0);
   const [weightField, setWeightField] = useState<number>(0);
+  const [toShow, setToShow] = useState<Level | null>(null);
 
   const handleCalculateButton = () => {
     if (heightField && weightField) {
+      setToShow(calculateIMC(heightField, weightField));
     } else {
       alert("Informe seu peso e altura");
     }
+  };
+
+  const handleBackButton = () => {
+    setToShow(null);
+    setHeightField(0);
+    setWeightField(0);
   };
 
   return (
@@ -42,7 +53,23 @@ const App = () => {
           />
           <button onClick={handleCalculateButton}>Calcular</button>
         </div>
-        <div className={styles.rightSide}>...</div>
+        <div className={styles.rightSide}>
+          {!toShow && (
+            <div className={styles.grid}>
+              {levels.map((item, key) => (
+                <GridItem key={key} item={item} />
+              ))}
+            </div>
+          )}
+          {toShow && (
+            <div className={styles.rightBig}>
+              <div className={styles.rightArrow} onClick={handleBackButton}>
+                <img src={leftArrowImage} alt="" width={25} />
+              </div>
+              <GridItem item={toShow} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
